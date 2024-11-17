@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Purpose {
+  LOSE
+  GAIN
+  MAINTAIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+model User {
+  id        String   @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String   @unique
+  password  String
+  age       Int?
+  weight    Float?
+  height    Float?
+  purpose   Purpose?
+  gender    Gender?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  meals     Meal[] // Relation field to Meal
+}
+
+model Meal {
+  id        String   @id @default(cuid())
+  image     String
+  foodItems Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId], name: "userId")
+}
